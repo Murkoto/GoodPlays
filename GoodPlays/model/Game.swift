@@ -23,7 +23,7 @@ class Game: Codable {
     let name: String?
     let backgroundImage: String?
     let released: Date?
-    let metacritic: Int?
+    let rating: Double?
     
     var image: UIImage?
     
@@ -31,7 +31,7 @@ class Game: Codable {
         case id
         case name
         case backgroundImage = "background_image"
-        case metacritic
+        case rating
         case released = "released"
     }
     
@@ -41,7 +41,7 @@ class Game: Codable {
         id = try container.decode(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         backgroundImage = try container.decode(String.self, forKey: .backgroundImage)
-        metacritic = try container.decode(Int.self, forKey: .metacritic)
+        rating = try container.decode(Double.self, forKey: .rating)
         
         let releasedString = try container.decode(String.self, forKey: .released)
         let dateFormatter = DateFormatter()

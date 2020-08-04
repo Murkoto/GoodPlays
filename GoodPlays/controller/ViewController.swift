@@ -17,22 +17,51 @@ class ViewController: UIViewController {
     private var isLoading = false
     
     private let searchController = UISearchController(searchResultsController: nil)
+    var indicator = UIActivityIndicatorView()
+    
+    private var refreshControl = UIRefreshControl()
+    
+    let defaultUrl = "https://api.rawg.io/api/games?page_size=5"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.navigationItem.searchController = searchController
         
-        components = URLComponents(string: "https://api.rawg.io/api/games?page_size=5")
+        components = URLComponents(string: defaultUrl)
+        
         gameTableView.dataSource = self
         gameTableView.delegate = self
+        gameTableView.scrollsToTop = true
         gameTableView.register(UINib(nibName: "GameTableViewCell", bundle: nil), forCellReuseIdentifier:"GameCell")
         gameTableView.estimatedRowHeight = 360
+        
+        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
+        gameTableView.addSubview(refreshControl)
+        
+        activityIndicator()
         loadData()
+    }
+    
+    @objc func refresh(_ sender: Any?) {
+        self.games.removeAll()
+        components = URLComponents(string: defaultUrl)
+        loadData()
+    }
+    
+    func activityIndicator() {
+        indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        indicator.style = .medium
+        indicator.center = self.view.center
+        indicator.hidesWhenStopped = true
+        indicator.backgroundColor = .white
+        self.view.addSubview(indicator)
     }
 
     private func loadData() {
         isLoading = true
+        indicator.startAnimating()
         guard let component = self.components else {return}
         URLSession.shared.dataTask(with: component.url!) { data, response, error in
             guard let response = response as? HTTPURLResponse, let data = data else {return}
@@ -44,6 +73,8 @@ class ViewController: UIViewController {
                         self.games.append(game)
                     }
                     DispatchQueue.main.async {
+                        self.indicator.stopAnimating()
+                        self.refreshControl.endRefreshing()
                         self.gameTableView.reloadData()
                     }
                 }
@@ -95,6 +126,10 @@ extension ViewController: UITableViewDataSource, UIScrollViewDelegate, UITableVi
         if (current == lastElement && !isLoading) {
             loadData()
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        gameTableView.deselectRow(at: indexPath, animated: true)
     }
     
 }

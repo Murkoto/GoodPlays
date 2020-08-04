@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4416789C24D9A41F00F91883 /* GameDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4416789A24D9A41F00F91883 /* GameDetailViewController.swift */; };
+		4416789D24D9A41F00F91883 /* GameDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4416789B24D9A41F00F91883 /* GameDetailViewController.xib */; };
 		4421826C24D6FABF001C70F1 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4421826B24D6FABF001C70F1 /* Game.swift */; };
 		44AD688C24D797AB0070955D /* GameTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AD688A24D797AB0070955D /* GameTableViewCell.swift */; };
 		44AD688D24D797AB0070955D /* GameTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44AD688B24D797AB0070955D /* GameTableViewCell.xib */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4416789A24D9A41F00F91883 /* GameDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailViewController.swift; sourceTree = "<group>"; };
+		4416789B24D9A41F00F91883 /* GameDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameDetailViewController.xib; sourceTree = "<group>"; };
 		4421826B24D6FABF001C70F1 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		44AD688A24D797AB0070955D /* GameTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTableViewCell.swift; sourceTree = "<group>"; };
 		44AD688B24D797AB0070955D /* GameTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameTableViewCell.xib; sourceTree = "<group>"; };
@@ -93,6 +97,7 @@
 			children = (
 				44E972E524D5E2B300AF8B56 /* ViewController.swift */,
 				44AD688A24D797AB0070955D /* GameTableViewCell.swift */,
+				4416789A24D9A41F00F91883 /* GameDetailViewController.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -103,6 +108,7 @@
 				44E972E724D5E2B300AF8B56 /* Main.storyboard */,
 				44AD688B24D797AB0070955D /* GameTableViewCell.xib */,
 				44E972EC24D5E2B500AF8B56 /* LaunchScreen.storyboard */,
+				4416789B24D9A41F00F91883 /* GameDetailViewController.xib */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -177,6 +183,7 @@
 				44E972EE24D5E2B500AF8B56 /* LaunchScreen.storyboard in Resources */,
 				44E972EB24D5E2B500AF8B56 /* Assets.xcassets in Resources */,
 				44E972E924D5E2B300AF8B56 /* Main.storyboard in Resources */,
+				4416789D24D9A41F00F91883 /* GameDetailViewController.xib in Resources */,
 				44AD688D24D797AB0070955D /* GameTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -189,6 +196,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				44AD688C24D797AB0070955D /* GameTableViewCell.swift in Sources */,
+				4416789C24D9A41F00F91883 /* GameDetailViewController.swift in Sources */,
 				44E972E624D5E2B300AF8B56 /* ViewController.swift in Sources */,
 				4421826C24D6FABF001C70F1 /* Game.swift in Sources */,
 				44E972E224D5E2B300AF8B56 /* AppDelegate.swift in Sources */,

@@ -40,6 +40,7 @@ class GameTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    
     public func setData() {
         if let game = game {
             name.text = game.name ?? ""
@@ -53,8 +54,8 @@ class GameTableViewCell: UITableViewCell {
             } else {
                 self.thumbnail.image = game.image
             }
-            if let metacritic = game.metacritic {
-                self.metacritic.text = String(metacritic)
+            if let rating = game.rating {
+                self.metacritic.text = String(rating)
             }
         }
     }

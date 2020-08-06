@@ -11,95 +11,111 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var gameTableView: UITableView!
+    @IBOutlet weak var searchContainer: UIView!
     
     private var components: URLComponents?
     private var games = [Game]()
     private var isLoading = false
     
     private let searchController = UISearchController(searchResultsController: nil)
-    var indicator = UIActivityIndicatorView()
+    private var indicator = UIActivityIndicatorView()
     
     private var refreshControl = UIRefreshControl()
     
-    let defaultUrl = "https://api.rawg.io/api/games?page_size=5"
+    private var pageSize = 10
+    private var page = 1
+    private var search = ""
+    
+    let defaultUrl = "https://api.rawg.io/api/games"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.navigationItem.searchController = searchController
+        self.navigationItem.titleView = UIImageView(image: UIImage(named: "goodplays"))
         
         components = URLComponents(string: defaultUrl)
         
+        setupActivityIndicator()
+        self.indicator.startAnimating()
+        
+        setupGameTableView()
+        setupRefresh()
+        setupSearchBar()
+        loadData()
+        
+    }
+    
+    private func setupSearchBar() {
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+    }
+    
+    private func setupRefresh() {
+        refreshControl.attributedTitle = NSAttributedString(string: "Refreshing")
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
+        gameTableView.addSubview(refreshControl)
+    }
+    
+    private func setupGameTableView() {
         gameTableView.dataSource = self
         gameTableView.delegate = self
         gameTableView.scrollsToTop = true
         gameTableView.register(UINib(nibName: "GameTableViewCell", bundle: nil), forCellReuseIdentifier:"GameCell")
         gameTableView.estimatedRowHeight = 360
-        
-        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
-        gameTableView.addSubview(refreshControl)
-        
-        activityIndicator()
+    }
+    
+    private func refresh() {
+        self.games.removeAll()
+        self.page = 1
         loadData()
     }
     
     @objc func refresh(_ sender: Any?) {
         self.games.removeAll()
-        components = URLComponents(string: defaultUrl)
+        self.page = 1
         loadData()
     }
     
-    func activityIndicator() {
-        indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+    func setupActivityIndicator() {
         indicator.style = .medium
         indicator.center = self.view.center
         indicator.hidesWhenStopped = true
         indicator.backgroundColor = .white
+        indicator.frame = view.frame
         self.view.addSubview(indicator)
     }
 
-    private func loadData() {
-        isLoading = true
-        indicator.startAnimating()
-        guard let component = self.components else {return}
-        URLSession.shared.dataTask(with: component.url!) { data, response, error in
-            guard let response = response as? HTTPURLResponse, let data = data else {return}
-            if response.statusCode == 200 {
-                if let games = self.decodeJson(data: data) {
-                    let nextUrl = games.next ?? ""
-                    self.components = URLComponents(string: nextUrl)
-                    for game in games.games {
-                        self.games.append(game)
-                    }
-                    DispatchQueue.main.async {
-                        self.indicator.stopAnimating()
-                        self.refreshControl.endRefreshing()
-                        self.gameTableView.reloadData()
-                    }
-                }
-            } else {
-                
-            }
-        }.resume()
+    @IBAction func onProfileButtonClicked(_ sender: Any) {
+        let profile = ProfileViewController(nibName: "ProfileViewController", bundle: nil)
+        
+        self.navigationController?.pushViewController(profile, animated: true)
     }
     
-    private func decodeJson(data: Data) -> Games? {
-        let decoder = JSONDecoder()
-        
-        do {
-            let games = try decoder.decode(Games.self, from: data)
-            return games
-        } catch let error {
-            let str = String(decoding: data, as: UTF8.self)
-            print(str)
-            print("API Error " + error.localizedDescription)
-            return nil
-        }
+    private func loadData() {
+        isLoading = true
+        let queryItems = [
+            URLQueryItem(name: "page_size", value: String(pageSize)),
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "search", value: search)
+        ]
+        GamesAPI.shared.getGames(params: queryItems,
+            onResult: { games in
+                self.isLoading = false
+                self.page += 1
+                for game in games {
+                    self.games.append(game)
+                }
+                self.indicator.stopAnimating()
+                self.refreshControl.endRefreshing()
+                self.gameTableView.reloadData()
+        }, onError: { error in
+            print(error.localizedDescription)
+        })
     }
 }
 
-extension ViewController: UITableViewDataSource, UIScrollViewDelegate, UITableViewDelegate {
+extension ViewController: UITableViewDataSource, UIScrollViewDelegate, UITableViewDelegate, UISearchBarDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.games.count
@@ -111,10 +127,6 @@ extension ViewController: UITableViewDataSource, UIScrollViewDelegate, UITableVi
         let game = self.games[indexPath.row]
         cell.game = game
         cell.setData()
-        
-        if(indexPath.row == games.count - 1) {
-            isLoading = false
-        }
         
         return cell
     }
@@ -130,6 +142,26 @@ extension ViewController: UITableViewDataSource, UIScrollViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         gameTableView.deselectRow(at: indexPath, animated: true)
+        let detail = GameDetailViewController(nibName: "GameDetailViewController", bundle: nil)
+        let game = games[indexPath.row]
+        detail.game = game
+        
+        self.navigationController?.pushViewController(detail, animated: true)
+    }
+ 
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        indicator.startAnimating()
+        self.gameTableView.setContentOffset(.zero, animated: false)
+        self.search = searchText
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.refresh(_:)), object: nil)
+        self.perform(#selector(self.refresh(_:)), with: nil, afterDelay: 0.5)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.indicator.startAnimating()
+        self.gameTableView.setContentOffset(.zero, animated: false)
+        self.search = ""
+        self.refresh()
     }
     
 }

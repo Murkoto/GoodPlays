@@ -30,7 +30,18 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Games" id="zc9-jL-kOW"/>
+                    <navigationItem key="navigationItem" title="Games" id="zc9-jL-kOW">
+                        <barButtonItem key="rightBarButtonItem" id="9wu-Qb-SAb">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MaG-Rn-H6Z">
+                                <rect key="frame" x="376" y="11" width="18" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="person.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="onProfileButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4JR-kQ-NMn"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="gameTableView" destination="anB-h7-ZAQ" id="jUo-V7-OSi"/>
                     </connections>
@@ -58,4 +69,7 @@
             <point key="canvasLocation" x="137.68115942028987" y="129.91071428571428"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="person.fill" catalog="system" width="128" height="120"/>
+    </resources>
 </document>
